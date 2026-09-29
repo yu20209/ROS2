@@ -59,7 +59,7 @@ class RoutineList():
         else: 
             self.GRIPPER = abbRWS_IO()    
     # 机械臂回到初始零位。
-    def HomePos(self):
+    def HomePos(self):#waypoint文件定义机械臂预先定义好的“动作点”或者“动作参数”。
         print("(Robot Movement -> /Move): HomePos")
         # 调用机器人接口执行预定义HomePos动作。
         self.ROBOT.Move_EXECUTE("HomePos")
