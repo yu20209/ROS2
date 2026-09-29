@@ -253,13 +253,13 @@ class CubeDetection():
         Detected = False
         while time.time() < t_end:
             results = self.YOLOmodel(self.perspectiveImg)
-            boxes = results[0].boxes
+            boxes = results[0].boxes#YOLO检测结果->所有目标框
             ids = []
             # 遍历所有检测框，收集类别名称
             for box in boxes:
                 box = boxes.xyxy
                 for c in boxes.cls:
-                    ids.append(names[int(c)])
+                    ids.append(names[int(c)])#类别名字
             if (len(ids) != 0):
                 print("")
                 Detected = True
@@ -274,23 +274,26 @@ class CubeDetection():
         for box in boxes:
             name = names[int(box.cls[0])]
             if (name == "sticker" or name == "cube"): # ROI必须取整个立方体框，不能只用sticker贴纸的小框
-                x1, y1, x2, y2 = box.xyxy[0]
+                x1, y1, x2, y2 = box.xyxy[0]#x1,y1在左上，y2在左下，x2在右上
                 break
-        # 框向外扩充3像素，作为ROI区域
+        # 框向外扩充3像素，作为ROI区域= Region of Interest，感兴趣区域。避免 Bounding Box 太贴着方块边缘，把部分轮廓截掉。
         x = int(x1)-3
         y = int(y1)-3
         w = int(x2)+3
         h = int(y2)+3
+        #真正裁剪 ROI，后面的 OpenCV 就只处理这块。
         ROI = self.perspectiveImg[y:h, x:w]
-        # ROI预处理：高斯模糊降噪，转HSV颜色空间，颜色阈值掩码
+        # ROI预处理：高斯模糊降噪，对图片进行轻微平滑，减少噪声。
         ROI = cv2.GaussianBlur(ROI,(3,3),0)
+        #BGR 转HSV颜色空间，颜色阈值掩码
         imgHSV = cv2.cvtColor(ROI, cv2.COLOR_BGR2HSV)
         lowLimit = (0, 10, 10)
         upLimit = (70, 255, 255)
+        #HSV 值落在这个范围中的像素保留，范围外的去掉。
         mask = cv2.inRange(imgHSV, lowLimit, upLimit)
         # 轮廓提取，只保留面积大于500像素的轮廓，过滤噪声
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        poly_contour = []
+        poly_contour = []#只保存面积比较大的轮廓。
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > 500:
@@ -300,8 +303,8 @@ class CubeDetection():
             return(RESULT)
         # 最小外接矩形：获取立方体中心像素坐标 + 旋转角度
         for cnt in poly_contour:
-            rect = cv2.minAreaRect(cnt)
-            (xo, yo), (wo, ho), angle = rect
+            rect = cv2.minAreaRect(cnt)#能包住轮廓的最小面积旋转矩形。
+            (xo, yo), (wo, ho), angle = rect#中心，(宽度，高度)，旋转角——机械臂需要的，xo, yo是ROI 内部坐标。
             # 把ROI内局部像素坐标，还原到整张俯视图的全局像素坐标
             xo = xo + x
             yo = yo + y
