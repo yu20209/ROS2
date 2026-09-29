@@ -50,7 +50,7 @@ from objectpose_msgs.msg import ObjectPose    # 方块位姿消息
 from linkpose_msgs.msg import LinkPose        # 机械臂末端夹爪位姿消息
 
 # ===================== 全局变量 =====================
-# CUBES字典：保存4种方块实时位姿 x,y,z + 四元数qx,qy,qz,qw
+# CUBES字典：保存4种方块实时位姿 x,y,z + 四元数qx,qy,qz,qw。Gazebo 中物体真实的 Pose。
 CUBES = {}
 CUBES["WhiteCube"] = {"x": 0.0, "y": 0.0, "z": 0.0, "qx": 0.0, "qy": 0.0, "qz": 0.0, "qw": 0.0}
 CUBES["BlackCube"] = {"x": 0.0, "y": 0.0, "z": 0.0, "qx": 0.0, "qy": 0.0, "qz": 0.0, "qw": 0.0}
