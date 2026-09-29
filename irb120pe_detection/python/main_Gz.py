@@ -60,7 +60,7 @@ def main(args=None):
     rclpy.init(args=None)
 
     # 实例化各个功能类
-    SPAWN = SpawnCube()                 # 立方体生成器实例
+    SPAWN = SpawnCube()                 # 立方体生成器实例输入1：要生成什么Cube；输入2：怎样选择生成Pose，这里是 RANDOM
     DELETE = DeleteCube()               # 立方体删除器实例
     ROUTINE = RoutineList("GAZEBO")     # 机械臂动作集，指定运行环境为Gazebo仿真
     print("")
