@@ -53,7 +53,7 @@ from dataclasses import dataclass
 class RobotRES:
     MESSAGE: String  # 动作返回文本信息
     SUCCESS: bool    # 动作是否执行成功
-# 全局变量RES，用于跨回调函数保存Action执行结果
+# 写在 class 外面。全局变量RES，用于跨回调函数保存Action执行结果
 RES = RobotRES("null", False)
 # 导入航点类waypoints，用于读取预定义位姿
 from waypoints import waypoints
@@ -67,6 +67,7 @@ class RobMoveCLIENT(Node):
         # 调用父类Node构造，设置节点名称
         super().__init__('irb120pe_RobMove_Client')
         # 创建Action客户端，绑定Robmove动作，服务名称为Robmove
+        #Robmove：Action接口类型'Robmove'：Action名字
         self._action_client = ActionClient(self, Robmove, 'Robmove')
         print("(/RobMove): Initialising ROS2 Action Client!")
         print("(/RobMove): Waiting for /Robmove ROS2 ActionServer to be available...")
@@ -112,7 +113,7 @@ class RobMoveCLIENT(Node):
         # 注册结果回调，动作执行完成后触发
         self._get_result_future.add_done_callback(self.get_result_callback)
     # 获取动作执行结果的回调函数
-    def get_result_callback(self, future):
+    def get_result_callback(self, future):#Action 的结果回来以后，通过这个全局变量把结果保存下来。
         # 声明使用全局RES变量
         global RES
         # 取出返回结果
