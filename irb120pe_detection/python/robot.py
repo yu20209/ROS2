@@ -96,7 +96,8 @@ class RobMoveCLIENT(Node):
         goal_msg.qz = TARGET_POSE.orientation.z
         # 姿态四元数qw
         goal_msg.qw = TARGET_POSE.orientation.w
-        # 异步发送目标请求，返回future对象
+        # 异步发送目标请求，返回future对象 #Future 理解成：“未来某个时候会有结果的盒子。”
+        #这里的 Future 主要是在等：Server 接不接受这个 Goal。
         self._send_goal_future = self._action_client.send_goal_async(goal_msg)
         # 注册回调函数，目标被服务端接收/拒绝时触发
         self._send_goal_future.add_done_callback(self.goal_response_callback)
@@ -282,8 +283,8 @@ class RBT():
         # 发送自定义目标位姿到RobMove客户端
         self.RobMoveClient.send_goal(Type, Speed, Pose)
         # 自旋等待动作执行完成
-        while rclpy.ok():
-            rclpy.spin_once(self.RobMoveClient)
+        while rclpy.ok():#只要 ROS 2 系统还在正常运行，就一直循环。
+            rclpy.spin_once(self.RobMoveClient)#让这个 Node 处理一次待处理的 ROS 2 事件。
             if (RES.MESSAGE != "null"):
                 break
         # 动作成功
