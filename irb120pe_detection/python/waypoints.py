@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 # ===================================== COPYRIGHT ===================================== #
 #                                                                                       #
 #  IFRA (Intelligent Flexible Robotics and Assembly) Group, CRANFIELD UNIVERSITY        #
@@ -11,12 +10,12 @@
 #  You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-2.0  #
 #                                                                                       #
 #  Unless required by applicable law or agreed to in writing, software distributed      #
-#  under the License is distributed on an "as-is" basis, without warranties or          #
+#  under the License is distributed on an "as‑is" basis, without warranties or          #
 #  conditions of any kind, either express or implied. See the License for the specific  #
 #  language governing permissions and limitations under the License.                    #
 #                                                                                       #
 #  IFRA Group - Cranfield University                                                    #
-#  AUTHORS: Mikel Bueno Viso         - Mikel.Bueno-Viso@cranfield.ac.uk                 #
+#  AUTHORS: Mikel Bueno Viso         - Mikel.Bueno‑Viso@cranfield.ac.uk                 #
 #           Irene Bernardino Sanchez - i.bernardinosanchez.854@cranfield.ac.uk          #
 #           Seemal Asif              - s.asif@cranfield.ac.uk                           #
 #           Phil Webb                - p.f.webb@cranfield.ac.uk                         #
@@ -24,32 +23,32 @@
 #  Date: November, 2023.                                                                #
 #                                                                                       #
 # ===================================== COPYRIGHT ===================================== #
-
 # ======= CITE OUR WORK ======= #
 # You can cite our work with the following statement:
-# IFRA-Cranfield (2023). Object Detection and Pose Estimation within a Robot Cell. URL: https://github.com/IFRA-Cranfield/irb120_PoseEstimation
-
+# IFRA‑Cranfield (2023). Object Detection and Pose Estimation within a Robot Cell. URL: https://github.com/IFRA‑Cranfield/irb120_PoseEstimation
 # waypoints.py
-# This function returns the Robot Movement TYPE (Pose: /RobMove - Action: /Move) and the movement parameters.
-
+# 本文件作用：存放机械臂所有预设点位
+# 函数RobotPose：输入点位名字符串，返回对应的运动消息
+# 两种消息类型：
+#   Pose → 给 /RobMove 使用：直接给末端的坐标+四元数姿态
+#   Action → 给 /Move 使用：关节运动、直线运动、旋转等动作指令
 # ===== IMPORT REQUIRED COMPONENTS ===== #
-# Import ROS2 messages:
+# 导入ROS2消息
 from geometry_msgs.msg import Pose
 from ros2srrc_data.msg import Action
 
 # =============================================================================== #
-# CLASS -> waypoints:
-
+# CLASS -> waypoints：航点类，全部预定义点位存在字典 RobotPoseDict
 class waypoints():
-
     def __init__(self):
-
+        # 字典：key=点位名字符串，value=Pose对象 或者 Action对象
         self.RobotPoseDict = {}
 
-        # ========== HOME ========== #
+        # ========== HOME 机械臂原点/回家点 ========== #
+        # HomePos：关节空间回到原点，Action类型，给/Move接口调用
         self.RobotPoseDict["HomePos"] = Action()
-        self.RobotPoseDict["HomePos"].action = "MoveJ"
-        self.RobotPoseDict["HomePos"].speed = 1.0
+        self.RobotPoseDict["HomePos"].action = "MoveJ"   # MoveJ：关节运动
+        self.RobotPoseDict["HomePos"].speed = 1.0         # 运动速度
         self.RobotPoseDict["HomePos"].movej.joint1 = 0.0
         self.RobotPoseDict["HomePos"].movej.joint2 = -30.0
         self.RobotPoseDict["HomePos"].movej.joint3 = 30.0
@@ -57,25 +56,29 @@ class waypoints():
         self.RobotPoseDict["HomePos"].movej.joint5 = 90.0
         self.RobotPoseDict["HomePos"].movej.joint6 = 0.0
 
-        # ========== PLACE CUBE ========== #
-        # Blue Cube:
+        # ========== PLACE CUBE 放置方块点位 ========== #
+        # 命名规则：xxx_app = approach 接近点（上方预备点，不碰物体，z更高）
+        # xxx = 实际落下去的点位，z更小，靠近工作台
+        # Blue Cube 蓝色方块
         self.RobotPoseDict["PlaceBLUE_app"] = Pose()
         self.RobotPoseDict["PlaceBLUE_app"].position.x = 0.15
         self.RobotPoseDict["PlaceBLUE_app"].position.y = 0.145
-        self.RobotPoseDict["PlaceBLUE_app"].position.z = 1.111
+        self.RobotPoseDict["PlaceBLUE_app"].position.z = 1.111   # z高，接近点
         self.RobotPoseDict["PlaceBLUE_app"].orientation.x = 0.707
         self.RobotPoseDict["PlaceBLUE_app"].orientation.y = 0.707
         self.RobotPoseDict["PlaceBLUE_app"].orientation.z = 0.0
         self.RobotPoseDict["PlaceBLUE_app"].orientation.w = 0.0
+
         self.RobotPoseDict["PlaceBLUE"] = Pose()
         self.RobotPoseDict["PlaceBLUE"].position.x = 0.15
         self.RobotPoseDict["PlaceBLUE"].position.y = 0.145
-        self.RobotPoseDict["PlaceBLUE"].position.z = 1.08
+        self.RobotPoseDict["PlaceBLUE"].position.z = 1.08    # z降低，落到放置位置
         self.RobotPoseDict["PlaceBLUE"].orientation.x = 0.707
         self.RobotPoseDict["PlaceBLUE"].orientation.y = 0.707
         self.RobotPoseDict["PlaceBLUE"].orientation.z = 0.0
         self.RobotPoseDict["PlaceBLUE"].orientation.w = 0.0
-        # Black Cube:
+
+        # Black Cube 黑色方块
         self.RobotPoseDict["PlaceBLACK_app"] = Pose()
         self.RobotPoseDict["PlaceBLACK_app"].position.x = 0.105
         self.RobotPoseDict["PlaceBLACK_app"].position.y = 0.145
@@ -84,6 +87,7 @@ class waypoints():
         self.RobotPoseDict["PlaceBLACK_app"].orientation.y = 0.707
         self.RobotPoseDict["PlaceBLACK_app"].orientation.z = 0.0
         self.RobotPoseDict["PlaceBLACK_app"].orientation.w = 0.0
+
         self.RobotPoseDict["PlaceBLACK"] = Pose()
         self.RobotPoseDict["PlaceBLACK"].position.x = 0.105
         self.RobotPoseDict["PlaceBLACK"].position.y = 0.145
@@ -92,7 +96,8 @@ class waypoints():
         self.RobotPoseDict["PlaceBLACK"].orientation.y = 0.707
         self.RobotPoseDict["PlaceBLACK"].orientation.z = 0.0
         self.RobotPoseDict["PlaceBLACK"].orientation.w = 0.0
-        # White Cube:
+
+        # White Cube 白色方块
         self.RobotPoseDict["PlaceWHITE_app"] = Pose()
         self.RobotPoseDict["PlaceWHITE_app"].position.x = 0.105
         self.RobotPoseDict["PlaceWHITE_app"].position.y = 0.100
@@ -101,6 +106,7 @@ class waypoints():
         self.RobotPoseDict["PlaceWHITE_app"].orientation.y = 0.707
         self.RobotPoseDict["PlaceWHITE_app"].orientation.z = 0.0
         self.RobotPoseDict["PlaceWHITE_app"].orientation.w = 0.0
+
         self.RobotPoseDict["PlaceWHITE"] = Pose()
         self.RobotPoseDict["PlaceWHITE"].position.x = 0.105
         self.RobotPoseDict["PlaceWHITE"].position.y = 0.100
@@ -109,7 +115,8 @@ class waypoints():
         self.RobotPoseDict["PlaceWHITE"].orientation.y = 0.707
         self.RobotPoseDict["PlaceWHITE"].orientation.z = 0.0
         self.RobotPoseDict["PlaceWHITE"].orientation.w = 0.0
-        # No-sticker Cube:
+
+        # No‑sticker Cube 无贴纸方块
         self.RobotPoseDict["PlaceCUBE_app"] = Pose()
         self.RobotPoseDict["PlaceCUBE_app"].position.x = 0.15
         self.RobotPoseDict["PlaceCUBE_app"].position.y = 0.100
@@ -118,6 +125,7 @@ class waypoints():
         self.RobotPoseDict["PlaceCUBE_app"].orientation.y = 0.707
         self.RobotPoseDict["PlaceCUBE_app"].orientation.z = 0.0
         self.RobotPoseDict["PlaceCUBE_app"].orientation.w = 0.0
+
         self.RobotPoseDict["PlaceCUBE"] = Pose()
         self.RobotPoseDict["PlaceCUBE"].position.x = 0.15
         self.RobotPoseDict["PlaceCUBE"].position.y = 0.100
@@ -127,8 +135,8 @@ class waypoints():
         self.RobotPoseDict["PlaceCUBE"].orientation.z = 0.0
         self.RobotPoseDict["PlaceCUBE"].orientation.w = 0.0
 
-        # ========== CHECK CUBE FACE ========== #
-        # Front face:
+        # ========== CHECK CUBE FACE 查看方块各个面（相机拍照识别贴纸） ========== #
+        # Front face 方块正面拍照位姿
         self.RobotPoseDict["FacePose_1"] = Pose()
         self.RobotPoseDict["FacePose_1"].position.x = 0.501
         self.RobotPoseDict["FacePose_1"].position.y = 0.525
@@ -137,7 +145,8 @@ class waypoints():
         self.RobotPoseDict["FacePose_1"].orientation.y = 0.708
         self.RobotPoseDict["FacePose_1"].orientation.z = 0.0
         self.RobotPoseDict["FacePose_1"].orientation.w = 0.707
-        # Back face:
+
+        # Back face：原地旋转180度看背面，MoveROT 只旋转末端
         self.RobotPoseDict["FacePose_2"] = Action()
         self.RobotPoseDict["FacePose_2"].action = "MoveROT"
         self.RobotPoseDict["FacePose_2"].speed = 1.0
@@ -145,7 +154,7 @@ class waypoints():
         self.RobotPoseDict["FacePose_2"].moverot.pitch = 0.0
         self.RobotPoseDict["FacePose_2"].moverot.roll = 0.0
 
-        # Bottom face:
+        # Bottom face 方块底面拍照
         self.RobotPoseDict["FacePose_3"] = Pose()
         self.RobotPoseDict["FacePose_3"].position.x = 0.63
         self.RobotPoseDict["FacePose_3"].position.y = 0.525
@@ -154,7 +163,8 @@ class waypoints():
         self.RobotPoseDict["FacePose_3"].orientation.y = 0.147
         self.RobotPoseDict["FacePose_3"].orientation.z = -0.003
         self.RobotPoseDict["FacePose_3"].orientation.w = 0.989
-        # Top face:
+
+        # Top face 方块顶面拍照
         self.RobotPoseDict["FacePose_4"] = Pose()
         self.RobotPoseDict["FacePose_4"].position.x = 0.525
         self.RobotPoseDict["FacePose_4"].position.y = 0.527
@@ -164,16 +174,17 @@ class waypoints():
         self.RobotPoseDict["FacePose_4"].orientation.z = 0.002
         self.RobotPoseDict["FacePose_4"].orientation.w = 0.342
 
-        # ========== IF STICKER -> TOP... ========== #
-        # Pick cube before checking top face (1):
+        # ========== IF STICKER -> TOP... 贴纸在顶面的整套动作点位 ========== #
+        # Pick cube before checking top face (1): 准备拾取方块
         self.RobotPoseDict["PickTopApp"] = Action()
-        self.RobotPoseDict["PickTopApp"].action = "MoveL"
+        self.RobotPoseDict["PickTopApp"].action = "MoveL"      # MoveL 笛卡尔直线运动
         self.RobotPoseDict["PickTopApp"].speed = 0.1
         self.RobotPoseDict["PickTopApp"].movel.x = 0.0
         self.RobotPoseDict["PickTopApp"].movel.y = 0.0
         self.RobotPoseDict["PickTopApp"].movel.z = 0.05
+
         self.RobotPoseDict["PickTop"] = Action()
-        self.RobotPoseDict["PickTop"].action = "MoveRP"
+        self.RobotPoseDict["PickTop"].action = "MoveRP"        # MoveRP：位姿增量运动
         self.RobotPoseDict["PickTop"].speed = 0.1
         self.RobotPoseDict["PickTop"].moverp.x = 0.0
         self.RobotPoseDict["PickTop"].moverp.y = 0.0
@@ -181,7 +192,8 @@ class waypoints():
         self.RobotPoseDict["PickTop"].moverp.yaw = 0.0
         self.RobotPoseDict["PickTop"].moverp.pitch = -20.0
         self.RobotPoseDict["PickTop"].moverp.roll = 0.0
-        # Place it on top of workspace after checking top face (2):
+
+        # Place it on top of workspace after checking top face (2): 拍完顶面临时放下
         self.RobotPoseDict["RePickTopApp_PREV"] = Pose()
         self.RobotPoseDict["RePickTopApp_PREV"].position.x = 0.528
         self.RobotPoseDict["RePickTopApp_PREV"].position.y = 0.527
@@ -190,13 +202,15 @@ class waypoints():
         self.RobotPoseDict["RePickTopApp_PREV"].orientation.y = 0.938
         self.RobotPoseDict["RePickTopApp_PREV"].orientation.z = 0.0
         self.RobotPoseDict["RePickTopApp_PREV"].orientation.w = 0.346
+
         self.RobotPoseDict["RePickTop_PREV"] = Action()
         self.RobotPoseDict["RePickTop_PREV"].action = "MoveL"
         self.RobotPoseDict["RePickTop_PREV"].speed = 0.1
         self.RobotPoseDict["RePickTop_PREV"].movel.x = 0.0
         self.RobotPoseDict["RePickTop_PREV"].movel.y = 0.0
         self.RobotPoseDict["RePickTop_PREV"].movel.z = -0.03
-        # Pick it back before placing on tray (3):
+
+        # Pick it back before placing on tray (3): 再次拾取方块，准备放到料盘
         self.RobotPoseDict["RePickTop"] = Action()
         self.RobotPoseDict["RePickTop"].action = "MoveRP"
         self.RobotPoseDict["RePickTop"].speed = 0.1
@@ -206,6 +220,7 @@ class waypoints():
         self.RobotPoseDict["RePickTop"].moverp.yaw = 0.0
         self.RobotPoseDict["RePickTop"].moverp.pitch = 20.0
         self.RobotPoseDict["RePickTop"].moverp.roll = 0.0
+
         self.RobotPoseDict["RePickTopApp"] = Action()
         self.RobotPoseDict["RePickTopApp"].action = "MoveL"
         self.RobotPoseDict["RePickTopApp"].speed = 0.1
@@ -213,8 +228,8 @@ class waypoints():
         self.RobotPoseDict["RePickTopApp"].movel.y = 0.0
         self.RobotPoseDict["RePickTopApp"].movel.z = 0.05
 
-        # ========== IF STICKER -> SIDE FACES... ========== #
-        # Place cube in the middle of the workspace (1):
+        # ========== IF STICKER -> SIDE FACES... 贴纸在侧面整套动作点位 ========== #
+        # Place cube in the middle of the workspace (1): 把方块放到工作台中间
         self.RobotPoseDict["PlaceMidApp"] = Pose()
         self.RobotPoseDict["PlaceMidApp"].position.x = 0.65
         self.RobotPoseDict["PlaceMidApp"].position.y = 0.53
@@ -223,6 +238,7 @@ class waypoints():
         self.RobotPoseDict["PlaceMidApp"].orientation.y = 1.0
         self.RobotPoseDict["PlaceMidApp"].orientation.z = 0.0
         self.RobotPoseDict["PlaceMidApp"].orientation.w = 0.0
+
         self.RobotPoseDict["PlaceMid"] = Pose()
         self.RobotPoseDict["PlaceMid"].position.x = 0.65
         self.RobotPoseDict["PlaceMid"].position.y = 0.53
@@ -231,19 +247,22 @@ class waypoints():
         self.RobotPoseDict["PlaceMid"].orientation.y = 1.0
         self.RobotPoseDict["PlaceMid"].orientation.z = 0.0
         self.RobotPoseDict["PlaceMid"].orientation.w = 0.0
-        # Pick cube before checking the side faces (2):
+
+        # Pick cube before checking the side faces (2): 拾取方块，旋转查看各个侧面
         self.RobotPoseDict["PickSideApp_1"] = Action()
         self.RobotPoseDict["PickSideApp_1"].action = "MoveROT"
         self.RobotPoseDict["PickSideApp_1"].speed = 1.0
         self.RobotPoseDict["PickSideApp_1"].moverot.yaw = 90.0
         self.RobotPoseDict["PickSideApp_1"].moverot.pitch = 0.0
         self.RobotPoseDict["PickSideApp_1"].moverot.roll = 0.0
+
         self.RobotPoseDict["PickSideApp_2"] = Action()
         self.RobotPoseDict["PickSideApp_2"].action = "MoveL"
         self.RobotPoseDict["PickSideApp_2"].speed = 0.1
         self.RobotPoseDict["PickSideApp_2"].movel.x = 0.0
         self.RobotPoseDict["PickSideApp_2"].movel.y = 0.0
         self.RobotPoseDict["PickSideApp_2"].movel.z = 0.05
+
         self.RobotPoseDict["PickSide"] = Action()
         self.RobotPoseDict["PickSide"].action = "MoveL"
         self.RobotPoseDict["PickSide"].speed = 0.1
@@ -251,7 +270,7 @@ class waypoints():
         self.RobotPoseDict["PickSide"].movel.y = 0.0
         self.RobotPoseDict["PickSide"].movel.z = -0.03
 
-        # ========== CUBE ROTATION ========== #
+        # ========== CUBE ROTATION 方块旋转相关点位 ========== #
         self.RobotPoseDict["RotApp"] = Pose()
         self.RobotPoseDict["RotApp"].position.x = 0.50
         self.RobotPoseDict["RotApp"].position.y = 0.53
@@ -260,36 +279,42 @@ class waypoints():
         self.RobotPoseDict["RotApp"].orientation.y = 1.0
         self.RobotPoseDict["RotApp"].orientation.z = 0.0
         self.RobotPoseDict["RotApp"].orientation.w = 0.0
+
         self.RobotPoseDict["RotBack"] = Action()
         self.RobotPoseDict["RotBack"].action = "MoveROT"
         self.RobotPoseDict["RotBack"].speed = 1.0
         self.RobotPoseDict["RotBack"].moverot.yaw = 180.0
         self.RobotPoseDict["RotBack"].moverot.pitch = 0.0
         self.RobotPoseDict["RotBack"].moverot.roll = 0.0
+
         self.RobotPoseDict["RotBack_2"] = Action()
         self.RobotPoseDict["RotBack_2"].action = "MoveROT"
         self.RobotPoseDict["RotBack_2"].speed = 1.0
         self.RobotPoseDict["RotBack_2"].moverot.yaw = -180.0
         self.RobotPoseDict["RotBack_2"].moverot.pitch = 0.0
         self.RobotPoseDict["RotBack_2"].moverot.roll = 0.0
+
         self.RobotPoseDict["RotPlace"] = Action()
         self.RobotPoseDict["RotPlace"].action = "MoveL"
         self.RobotPoseDict["RotPlace"].speed = 0.1
         self.RobotPoseDict["RotPlace"].movel.x = 0.0
         self.RobotPoseDict["RotPlace"].movel.y = 0.0
         self.RobotPoseDict["RotPlace"].movel.z = -0.03
+
         self.RobotPoseDict["RotPlace2"] = Action()
         self.RobotPoseDict["RotPlace2"].action = "MoveL"
         self.RobotPoseDict["RotPlace2"].speed = 0.1
         self.RobotPoseDict["RotPlace2"].movel.x = 0.0
         self.RobotPoseDict["RotPlace2"].movel.y = 0.0
         self.RobotPoseDict["RotPlace2"].movel.z = -0.035
+
         self.RobotPoseDict["RotPlace3"] = Action()
         self.RobotPoseDict["RotPlace3"].action = "MoveL"
         self.RobotPoseDict["RotPlace3"].speed = 0.1
         self.RobotPoseDict["RotPlace3"].movel.x = 0.005
         self.RobotPoseDict["RotPlace3"].movel.y = 0.0
         self.RobotPoseDict["RotPlace3"].movel.z = -0.03
+
         self.RobotPoseDict["RotationPick"] = Action()
         self.RobotPoseDict["RotationPick"].action = "MoveRP"
         self.RobotPoseDict["RotationPick"].speed = 0.1
@@ -299,6 +324,7 @@ class waypoints():
         self.RobotPoseDict["RotationPick"].moverp.yaw = 0.0
         self.RobotPoseDict["RotationPick"].moverp.pitch = 30.0
         self.RobotPoseDict["RotationPick"].moverp.roll = 0.0
+
         self.RobotPoseDict["RotationPlace"] = Action()
         self.RobotPoseDict["RotationPlace"].action = "MoveRP"
         self.RobotPoseDict["RotationPlace"].speed = 0.1
@@ -308,12 +334,14 @@ class waypoints():
         self.RobotPoseDict["RotationPlace"].moverp.yaw = 0.0
         self.RobotPoseDict["RotationPlace"].moverp.pitch = -30.0
         self.RobotPoseDict["RotationPlace"].moverp.roll = 0.0
+
         self.RobotPoseDict["RotZ"] = Action()
         self.RobotPoseDict["RotZ"].action = "MoveL"
         self.RobotPoseDict["RotZ"].speed = 0.1
         self.RobotPoseDict["RotZ"].movel.x = 0.0
         self.RobotPoseDict["RotZ"].movel.y = 0.0
         self.RobotPoseDict["RotZ"].movel.z = 0.03
+
         self.RobotPoseDict["RotX"] = Action()
         self.RobotPoseDict["RotX"].action = "MoveL"
         self.RobotPoseDict["RotX"].speed = 0.3
@@ -321,8 +349,7 @@ class waypoints():
         self.RobotPoseDict["RotX"].movel.y = 0.0
         self.RobotPoseDict["RotX"].movel.z = 0.0
 
+    # 对外提供接口：输入点位名字符串，返回存好的Pose/Action消息对象
     def RobotPose(self, PoseName):
-
         result = self.RobotPoseDict[PoseName]
-        return(result)          
-            
+        return(result)
