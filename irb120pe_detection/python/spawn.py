@@ -55,13 +55,19 @@ import math
 # CLASS -> SpawnEntityGz (Gazebo):
 # 封装【Gazebo生成实体】的ROS2服务客户端，底层调用 /spawn_entity 服务
 class SpawnEntityGz(Node):
-    def __init__(self):
-        # 初始化ROS2节点，节点名 irb120pe_SpawnEntity_Client
-        super().__init__('irb120pe_SpawnEntity_Client')
-        # 创建/spawn_entity服务客户端，用来请求Gazebo生成物体
-        self.cli_SPAWN = self.create_client(SpawnEntity, "/spawn_entity")
-        # 实例化生成实体的请求消息对象
-        self.req_SPAWN = SpawnEntity.Request()
+def __init__(self):
+    # 调用父类 Node 的构造函数，初始化 ROS 2 节点，并指定节点名称
+    super().__init__('irb120pe_SpawnEntity_Client')
+
+    # 创建 ROS 2 服务客户端，用于向 Gazebo 的 /spawn_entity 服务发送生成模型的请求
+    # SpawnEntity：服务类型，定义请求和响应的数据结构
+    # /spawn_entity：服务名称，由 Gazebo 提供对应的服务端
+    # self.cli_SPAWN：保存创建的服务客户端对象
+    self.cli_SPAWN = self.create_client(SpawnEntity, "/spawn_entity")
+
+    # 创建 SpawnEntity 服务的请求对象，用于存放待生成模型的名称、XML 描述和初始位姿等信息
+    # 此处仅创建请求对象，尚未向 Gazebo 发送请求
+    self.req_SPAWN = SpawnEntity.Request()
 
     def SPAWN(self, CUBE, POSE):
         """
