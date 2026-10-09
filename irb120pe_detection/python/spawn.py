@@ -146,6 +146,7 @@ class SpawnCube():
         POSE.orientation.w = OrientationRES.orientation.w
 
         # 返回结果字典，保存cube生成出来的位置yaw，默认success=False失败
+        #生成时的理论初始位姿
         RETURN = dict()
         RETURN["x"] = POSE.position.x
         RETURN["y"] = POSE.position.y
