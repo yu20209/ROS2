@@ -70,7 +70,7 @@ def __init__(self):
         self.req_SPAWN.initial_pose.orientation.z = POSE.orientation.z
         self.req_SPAWN.initial_pose.orientation.w = POSE.orientation.w
 
-        # 异步调用ROS2服务，非阻塞，返回future等待结果
+        # 异步调用ROS2服务，非阻塞，返回future等待结果。self.req_SPAWN：要发送的数据
         self.future_SPAWN = self.cli_SPAWN.call_async(self.req_SPAWN)
 
 # =============================================================================== #
