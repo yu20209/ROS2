@@ -60,8 +60,8 @@ def __init__(self):
     super().__init__('irb120pe_SpawnEntity_Client')
 
     # 创建 ROS 2 服务客户端，用于向 Gazebo 的 /spawn_entity 服务发送生成模型的请求
-    # SpawnEntity：服务类型，定义请求和响应的数据结构
-    # /spawn_entity：服务名称，由 Gazebo 提供对应的服务端
+    # SpawnEntity：服务类型，定义请求和响应的数据结构，规定请求和响应应该有哪些字段。
+    # /spawn_entity：服务名称，由 Gazebo 提供对应的服务端，指定请求发送给哪个服务。
     # self.cli_SPAWN：保存创建的服务客户端对象
     self.cli_SPAWN = self.create_client(SpawnEntity, "/spawn_entity")
 
